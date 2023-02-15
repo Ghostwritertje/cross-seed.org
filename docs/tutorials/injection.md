@@ -62,3 +62,47 @@ in Sonarr's import queue. The workaround is to enable which will append <categor
     qBittorrent.
 
 :::
+
+## `Transmission` setup
+
+
+1. Edit your config file:
+    1. Set your [`action`](../reference/options#action) option to `inject`.
+    2. Set your [`transmissionRpcUrl`](../reference/options#rtorrentrpcurl) option.
+       It should look like an `http` url that looks like
+       `http://user:pass@localhost:9091/transmission/rpc` 
+2. Start or restart `cross-seed`. The logs at startup will tell you if
+   `cross-seed` was able to connect to Transmission.
+
+:::tip After download script
+
+When running cross-seed in daemon mode, Transmission can invoke a search upon completion of a download. 
+Cross-seed will then search all configured trackers for this specific torrent. 
+
+1. Provide the following script in a location where Transmission can access it.
+```shell script
+#!/bin/bash
+
+TRANSMISSION_URL='http://localhost:2468/api/webhook' #change this to point to your Transmission
+
+## TR_APP_VERSION
+## TR_TIME_LOCALTIME
+## TR_TORRENT_BYTES_DOWNLOADED
+## TR_TORRENT_DIR
+## TR_TORRENT_HASH
+## TR_TORRENT_ID
+## TR_TORRENT_LABELS
+## TR_TORRENT_NAME
+## TR_TORRENT_TRACKERS
+
+echo "searching for torrent with hash $TR_TORRENT_HASH"
+
+curl --location --request POST 'http://localhost:2468/api/webhook' \
+  --header "Content-Type: application/json" \
+  --data-raw "{ \"infoHash\": \"$TR_TORRENT_HASH\"}"
+```
+
+2. In the settings of Transmission: call script when download completes: `sh ./link-to-script.sh`
+
+
+:::

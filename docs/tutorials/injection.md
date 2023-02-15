@@ -64,7 +64,12 @@ in Sonarr's import queue. The workaround is to enable which will append <categor
 :::
 
 ## `Transmission` setup
+:::caution
 
+Transmission is for now only available on the `next` branch
+
+
+:::
 
 1. Edit your config file:
     1. Set your [`action`](../reference/options#action) option to `inject`.
